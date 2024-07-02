@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Finance Tracker Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 2rem;
+        }
+        .finance-list {
+            padding-left: 0;
+        }
+        .finance-item {
+            margin-bottom: 10px;
+        }
+        .dashboard-section {
+            margin-bottom: 30px;
+        }
+        .table-header {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4 mb-4">Finance Tracker Dashboard</h1>
+
+        <!-- Month Selector -->
+        <div class="form-group dashboard-section">
+            <label for="month">Select Month:</label>
+            <select id="month" class="form-control" onchange="window.location.href = '/finance/?month=' + this.value;">
+                <option value="0" {% if selected_month == 0 %} selected {% endif %}>All Months</option>
+                <option value="1" {% if selected_month == 1 %} selected {% endif %}>January</option>
+                <option value="2" {% if selected_month == 2 %} selected {% endif %}>February</option>
+                <option value="3" {% if selected_month == 3 %} selected {% endif %}>March</option>
+                <option value="4" {% if selected_month == 4 %} selected {% endif %}>April</option>
+                <option value="5" {% if selected_month == 5 %} selected {% endif %}>May</option>
+                <option value="6" {% if selected_month == 6 %} selected {% endif %}>June</option>
+                <option value="7" {% if selected_month == 7 %} selected {% endif %}>July</option>
+                <option value="8" {% if selected_month == 8 %} selected {% endif %}>August</option>
+                <option value="9" {% if selected_month == 9 %} selected {% endif %}>September</option>
+                <option value="10" {% if selected_month == 10 %} selected {% endif %}>October</option>
+                <option value="11" {% if selected_month == 11 %} selected {% endif %}>November</option>
+                <option value="12" {% if selected_month == 12 %} selected {% endif %}>December</option>
+            </select>
+        </div>
+
+        <!-- Current Month Section -->
+        <div class="card dashboard-section">
+            <div class="card-header table-header" data-toggle="collapse" href="#currentMonthData">
+                <h2 class="card-title">Current Month</h2>
+                <div class="float-right">Total: {{ current_month_total.total }}</div>
+            </div>
+            <div id="currentMonthData" class="collapse">
+                <ul class="list-group list-group-flush finance-list">
+                    <li class="list-group-item">Main Balance: {{ current_month_total.main_balance }}</li>
+                    <li class="list-group-item">Investments: {{ current_month_total.investments }}</li>
+                    <li class="list-group-item">Lends: {{ current_month_total.lends }}</li>
+                    <li class="list-group-item">UPI Payments: {{ current_month_total.upi_payments }}</li>
+                    <li class="list-group-item">Credit Card Payments: {{ current_month_total.credit_card_payments }}</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Last Month Section -->
+        <div class="card dashboard-section">
+            <div class="card-header table-header" data-toggle="collapse" href="#lastMonthData">
+                <h2 class="card-title">Last Month</h2>
+                <div class="float-right">Total: {{ last_month_total.total }}</div>
+            </div>
+            <div id="lastMonthData" class="collapse">
+                <ul class="list-group list-group-flush finance-list">
+                    <li class="list-group-item">Main Balance: {{ last_month_total.main_balance }}</li>
+                    <li class="list-group-item">Investments: {{ last_month_total.investments }}</li>
+                    <li class="list-group-item">Lends: {{ last_month_total.lends }}</li>
+                    <li class="list-group-item">UPI Payments: {{ last_month_total.upi_payments }}</li>
+                    <li class="list-group-item">Credit Card Payments: {{ last_month_total.credit_card_payments }}</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Differences Section -->
+        <div class="card dashboard-section">
+            <div class="card-header table-header" data-toggle="collapse" href="#differenceData">
+                <h2 class="card-title">Differences</h2>
+                <div class="float-right">Total: {{ difference_total.total }}</div>
+            </div>
+            <div id="differenceData" class="collapse">
+                <ul class="list-group list-group-flush finance-list">
+                    <li class="list-group-item">Main Balance Difference: {{ difference_total.main_balance }}</li>
+                    <li class="list-group-item">Investments Difference: {{ difference_total.investments }}</li>
+                    <li class="list-group-item">Lends Difference: {{ difference_total.lends }}</li>
+                    <li class="list-group-item">UPI Payments Difference: {{ difference_total.upi_payments }}</li>
+                    <li class="list-group-item">Credit Card Payments Difference: {{ difference_total.credit_card_payments }}</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Investments List Section -->
+        <div class="card dashboard-section">
+            <div class="card-header table-header" data-toggle="collapse" href="#investmentList">
+                <h2 class="card-title">Investments List</h2>
+            </div>
+            <div id="investmentList" class="collapse">
+                <ul class="list-group list-group-flush finance-list">
+                {% for investment in investments %}
+                    <li class="list-group-item">{{ investment.investment_type }} - {{ investment.amount }}</li>
+                {% empty %}
+                    <li class="list-group-item">No investments found.</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Add New Investment Link -->
+        <div class="dashboard-section">
+            <a href="{% url 'investment_add' %}" class="btn btn-primary">Add New Investment</a>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS and dependencies (optional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Optional: Add your own scripts here if needed -->
+
+</body>
+</html>
